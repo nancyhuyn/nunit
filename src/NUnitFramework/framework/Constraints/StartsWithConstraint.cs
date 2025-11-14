@@ -11,9 +11,6 @@ namespace NUnit.Framework.Constraints
     /// </summary>
     public class StartsWithConstraint : StringConstraint
     {
-        private StringComparison? _comparisonType;
-        private CultureInfo? _cultureInfo;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="StartsWithConstraint"/> class.
         /// </summary>
@@ -47,12 +44,18 @@ namespace NUnit.Framework.Constraints
         /// <returns></returns>
         protected override bool Matches(string? actual)
         {
-            if (_cultureInfo is not null)
-            {
-                return actual is not null && actual.StartsWith(expected, caseInsensitive, _cultureInfo);
-            }
+            return actual is not null && actual.StartsWith(expected, comparisonType ?? StringComparison.CurrentCulture);
+        }
 
-            return actual is not null && actual.StartsWith(expected, _comparisonType ?? StringComparison.CurrentCulture);
+        /// <summary>
+        /// Test whether the constraint is matched by the actual value with a specific culture.
+        /// </summary>
+        /// <param name="actual">The string to be tested</param>
+        /// <param name="cultureInfo">The culture info to use for comparison</param>
+        /// <returns>True for success, false for failure</returns>
+        protected override bool Matches(string? actual, CultureInfo cultureInfo)
+        {
+            return actual is not null && actual.StartsWith(expected, caseInsensitive, cultureInfo);
         }
 
         /// <summary>
@@ -60,24 +63,18 @@ namespace NUnit.Framework.Constraints
         /// </summary>
         /// <exception cref="InvalidOperationException">Thrown when a comparison type different
         /// than <paramref name="comparisonType"/> was already set.</exception>
-        public StartsWithConstraint Using(StringComparison comparisonType)
+        public new StartsWithConstraint Using(StringComparison comparisonType)
         {
-            if (_comparisonType is null)
-                _comparisonType = comparisonType;
-            else if (_comparisonType != comparisonType)
-                throw new InvalidOperationException("A different comparison type was already set.");
-
+            base.Using(comparisonType);
             return this;
         }
 
         /// <summary>
         /// Modify the constraint to use the specified culture info.
         /// </summary>
-        public StartsWithConstraint Using(CultureInfo cultureInfo)
+        public new StartsWithConstraint Using(CultureInfo cultureInfo)
         {
-            if (_cultureInfo is null)
-                _cultureInfo = cultureInfo;
-
+            base.Using(cultureInfo);
             return this;
         }
     }
