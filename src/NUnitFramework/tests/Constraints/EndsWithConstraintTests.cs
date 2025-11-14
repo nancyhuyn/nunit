@@ -119,7 +119,6 @@ namespace NUnit.Framework.Tests.Constraints
             });
         }
 
-
         [Test]
         public void UseSameComparisonTypes_DoesNotThrowException()
         {
